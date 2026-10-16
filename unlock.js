@@ -11,7 +11,7 @@ form.addEventListener('submit',async event=>{
   const clear=await crypto.subtle.decrypt({name:'AES-GCM',iv:from64(p.iv)},key,from64(p.cipher));
   const files=JSON.parse(new TextDecoder().decode(clear));const doc=new DOMParser().parseFromString(new TextDecoder().decode(from64(files['index.html'])),'text/html');
   for(const img of doc.querySelectorAll('img[src]')){const name=img.getAttribute('src').replace(/^\.\//,'');if(!files[name])throw Error('missing image');img.src='data:image/webp;base64,'+files[name];}
-  for(const a of doc.querySelectorAll('a[href]')){const name=a.getAttribute('href').replace(/^\.\//,'');if(files[name]){a.href=URL.createObjectURL(new Blob([from64(files[name])],{type:'image/png'}));a.setAttribute('download',name.split('/').pop());}}
+  for(const a of doc.querySelectorAll('a[href]')){const name=a.getAttribute('href').replace(/^\.\//,'');if(files[name]){a.href=URL.createObjectURL(new Blob([from64(files[name])],{type:'image/png'}));if(a.hasAttribute('download'))a.setAttribute('download',name.split('/').pop());}}
   document.getElementById('password').value='';delete window.hoshiPayload;
   document.documentElement.replaceWith(doc.documentElement);
  }catch(error){message.textContent='パスワードを確認して、もう一度お試しください。';button.disabled=false;}
